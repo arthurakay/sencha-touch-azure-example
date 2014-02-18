@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js"><span id='Ext-azure-AuthWindow'>/**
+</span> * @private
+ */
+Ext.define('Ext.azure.AuthWindow', {
+    singleton : true,
+
+    requires : [
+        'Ext.Ajax'
+    ],
+
+<span id='Ext-azure-AuthWindow-property-window'>    window : null,
+</span>
+<span id='Ext-azure-AuthWindow-property-intervalId'>    intervalId : null,
+</span>
+<span id='Ext-azure-AuthWindow-property-scopedMessageFn'>    scopedMessageFn : null,
+</span>
+<span id='Ext-azure-AuthWindow-method-create'>    create : function (url) {
+</span>        this.window = window.open(url, '_blank', 'location=no');
+
+        if (Ext.browser.is.WebView) {
+            this.window.addEventListener('loadstart', this.urlChangeHandler);
+            this.window.addEventListener('exit', this.exitHandler);
+        }
+        else {
+            //this.scopedMessageFn = Ext.Function
+
+            window.addEventListener('message', this.messageHandler);
+        }
+
+        this.intervalId = window.setInterval(this.intervalFn, 250);
+    },
+
+<span id='Ext-azure-AuthWindow-method-intervalFn'>    intervalFn : function () {
+</span>        var auth = Ext.azure.AuthWindow;
+
+        if (auth.window &amp;&amp; auth.window.closed === true) {
+            auth.endRequest('setInterval() detected the authentication window was closed manually.');
+        }
+    },
+
+<span id='Ext-azure-AuthWindow-method-endRequest'>    endRequest : function (err, oauth) {
+</span>        var authWindow = this.window;
+
+        window.clearInterval(this.intervalId);
+
+        if (authWindow) {
+            if (Ext.browser.is.WebView) {
+                authWindow.removeEventListener('loadstart', this.urlChangeHandler);
+                authWindow.removeEventListener('exit', this.exitHandler);
+            }
+            else {
+                window.removeEventListener('message', this.messageHandler);
+            }
+
+            authWindow.close();
+        }
+
+        if (!err) {
+            Ext.azure.Authentication.onAuthSuccess(oauth);
+        }
+        else {
+            Ext.azure.Authentication.onAuthFailure(err);
+        }
+    },
+
+<span id='Ext-azure-AuthWindow-method-messageHandler'>    messageHandler : function (rawResponse) {
+</span>        var auth = Ext.azure.AuthWindow,
+            jsonResponse;
+
+        if (rawResponse.source === auth.window) {
+            try {
+                //Twitter returns a message on page load, but that's not what we want
+                if (rawResponse.data === '__ready__') {
+                    return;
+                }
+
+                jsonResponse = Ext.JSON.decode(rawResponse.data);
+            }
+            catch (r) {
+                auth.endRequest('An error occurred decoding the response.');
+                return;
+            }
+
+            if (jsonResponse.type === 'LoginCompleted') {
+                auth.endRequest(false, {
+                    id    : jsonResponse.oauth.user.userId,
+                    token : jsonResponse.oauth.authenticationToken
+                });
+            }
+
+            if (jsonResponse.error) {
+                auth.endRequest(jsonResponse.error);
+            }
+        }
+    },
+
+<span id='Ext-azure-AuthWindow-method-urlChangeHandler'>    urlChangeHandler : function (urlObject) {
+</span>        var url = urlObject.url,
+            queryIndex = url.indexOf('#');
+
+        if (queryIndex &lt; 0) { return false; }
+
+        var params = Ext.Object.fromQueryString(url.slice(queryIndex + 1)); //don't include the #
+
+        if (params.token) {
+            var credentials = Ext.JSON.decode(params.token);
+
+            Ext.azure.AuthWindow.endRequest(false, {
+                id    : credentials.user.userId,
+                token : credentials.authenticationToken
+            });
+
+            return true;
+        }
+
+        return false;
+    },
+
+<span id='Ext-azure-AuthWindow-method-exitHandler'>    exitHandler : function () {
+</span>        Ext.azure.AuthWindow.endRequest('exitHandler() detected the authentication window was closed manually.');
+    }
+});</pre>
+</body>
+</html>

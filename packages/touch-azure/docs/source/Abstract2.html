@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js"><span id='Ext-azure-storage-Abstract'>/**
+</span> * @private
+ */
+Ext.define('Ext.azure.storage.Abstract', {
+
+    requires : [
+        'Ext.Date'
+    ],
+
+    config : {
+<span id='Ext-azure-storage-Abstract-cfg-accountName'>        /**
+</span>         * @cfg {String}
+         */
+        accountName : '',
+
+<span id='Ext-azure-storage-Abstract-cfg-accessKey'>        /**
+</span>         * @cfg {String}
+         */
+        accessKey : '',
+
+<span id='Ext-azure-storage-Abstract-cfg-msVersion'>        /**
+</span>         * @cfg {String}
+         * Used to configure the **x-ms-version** request header. Must be specified in the format YYYY-MM-DD
+         * Defaults to 2012-02-12. See [Versioning for the Blob, Queue, and Table services in Windows Azure](http://msdn.microsoft.com/en-us/library/windowsazure/dd894041)
+         */
+        msVersion : '2012-02-12',
+
+<span id='Ext-azure-storage-Abstract-cfg-storageType'>        /**
+</span>         * @private
+         */
+        storageType : ''
+    },
+
+<span id='Ext-azure-storage-Abstract-method-constructor'>    constructor : function (config) {
+</span>        this.initConfig(config);
+    },
+
+<span id='Ext-azure-storage-Abstract-property-xmlDocumentTpl'>    xmlDocumentTpl : {
+</span>        storageService : [
+            '&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?&gt;',
+            '&lt;StorageServiceProperties&gt;',
+            '    &lt;Logging&gt;',
+            '        &lt;Version&gt;{logging.version}&lt;/Version&gt;',
+            '        &lt;Delete&gt;{logging.delete}&lt;/Delete&gt;',
+            '        &lt;Read&gt;{logging.read}&lt;/Read&gt;',
+            '        &lt;Write&gt;{logging.write}&lt;/Write&gt;',
+            '        &lt;RetentionPolicy&gt;',
+            '            &lt;Enabled&gt;{logging.retentionPolicy.enabled}&lt;/Enabled&gt;',
+            '            &lt;Days&gt;{logging.retentionPolicy.days}&lt;/Days&gt;',
+            '        &lt;/RetentionPolicy&gt;',
+            '    &lt;/Logging&gt;',
+            '    &lt;Metrics&gt;',
+            '        &lt;Version&gt;{metrics.version}&lt;/Version&gt;',
+            '        &lt;Enabled&gt;{metrics.enabled}&lt;/Enabled&gt;',
+            '        &lt;IncludeAPIs&gt;{metrics.includeApis}&lt;/IncludeAPIs&gt;',
+            '        &lt;RetentionPolicy&gt;',
+            '            &lt;Enabled&gt;{metrics.retentionPolicy.enabled}&lt;/Enabled&gt;',
+            '            &lt;Days&gt;{metrics.retentionPolicy.days}&lt;/Days&gt;',
+            '        &lt;/RetentionPolicy&gt;',
+            '    &lt;/Metrics&gt;',
+            '&lt;/StorageServiceProperties&gt;'
+        ],
+
+        acl : [
+            '&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?&gt;',
+            '&lt;SignedIdentifiers&gt;',
+            '    &lt;SignedIdentifier&gt;',
+            '        &lt;Id&gt;{id}&lt;/Id&gt;',
+            '        &lt;AccessPolicy&gt;',
+            '            &lt;Start&gt;{accessPolicy.start}&lt;/Start&gt;',
+            '            &lt;Expiry&gt;{accessPolicy.expiry}&lt;/Expiry&gt;',
+            '            &lt;Permission&gt;{accessPolicy.permission}&lt;/Permission&gt;',
+            '        &lt;/AccessPolicy&gt;',
+            '    &lt;/SignedIdentifier&gt;',
+            '&lt;/SignedIdentifiers&gt;'
+        ],
+
+        item : [
+            '&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot; standalone=&quot;yes&quot;?&gt;',
+            '&lt;entry xmlns=&quot;http://www.w3.org/2005/Atom&quot; ',
+            '       xmlns:d=&quot;http://schemas.microsoft.com/ado/2007/08/dataservices&quot; ',
+            '       xmlns:m=&quot;http://schemas.microsoft.com/ado/2007/08/dataservices/metadata&quot;&gt;',
+
+            '    &lt;updated&gt;{updated}&lt;/updated&gt;',
+            '    {[ this.renderId(values.id) ]}',
+            '    &lt;content type=&quot;application/xml&quot;&gt;',
+            '        &lt;m:properties&gt;',
+            '            &lt;tpl for=&quot;properties&quot;&gt;{[ this.renderProperty(values) ]}&lt;/tpl&gt;',
+            '        &lt;/m:properties&gt;',
+            '    &lt;/content&gt;',
+            '&lt;/entry&gt;',
+
+            {
+                renderProperty : function (property) {
+                    var propType = property.type;
+
+                    if (!propType) {
+                        propType = 'Edm.String';
+                    }
+
+                    return '&lt;d:' + property.key + ' m:type=&quot;' + propType + '&quot;&gt;' + property.value + '&lt;/d:' + property.key + '&gt;';
+                },
+
+                renderId : function (id) {
+                    if (id) {
+                        return '&lt;id&gt;' + id + '&lt;/id&gt;';
+                    }
+
+                    return '';
+                }
+            }
+        ],
+
+        blocklist : [
+            '&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?&gt;',
+            '&lt;BlockList&gt;',
+            '    &lt;tpl for=&quot;properties&quot;&gt;',
+            '    {[ this.renderProperty(values) ]}',
+            '    &lt;/tpl&gt;',
+            '&lt;/BlockList&gt;',
+
+            {
+                renderProperty : function (property) {
+                    return '&lt;' + property.key + '&gt;' + window.btoa(property.value) + '&lt;/' + property.key + '&gt;';
+                }
+            }
+        ]
+    },
+
+<span id='Ext-azure-storage-Abstract-method-_getDomain'>    /**
+</span>     * @private
+     */
+    _getDomain : function (excludePort) {
+        var port = (excludePort) ? '' : ':443';
+
+        return 'https://' +
+               this.getAccountName() + '.' +
+               this.getStorageType() + '.core.windows.net' + port;
+    },
+
+<span id='Ext-azure-storage-Abstract-method-_formatRequestUrl'>    /**
+</span>     * @private
+     */
+    _formatRequestUrl : function (canonicalResourceString, params) {
+        return Ext.String.urlAppend(
+            this._getDomain() + canonicalResourceString,
+            Ext.Object.toQueryString(params)
+        );
+    },
+
+<span id='Ext-azure-storage-Abstract-method-_formatCanonicalResource'>    /**
+</span>     * @private
+     *
+     * http://msdn.microsoft.com/en-us/library/windowsazure/dd179428
+     * 2009-09-19 Shared Key Lite and Table Service Format
+     */
+    _formatCanonicalResource : function (canonicalizedResource, params) {
+        return '/' + this.getAccountName() + canonicalizedResource + this._normalizeAuthHeaderParams(params);
+    },
+
+<span id='Ext-azure-storage-Abstract-method-_formatCanonicalizedHeaders'>    /**
+</span>     * @private
+     */
+    _formatCanonicalizedHeaders : function (headers) {
+        var canonicalizedHeaders = '';
+
+        if (headers) {
+            var canonicalizedHeadersArray = [];
+
+            Ext.Object.each(headers, function (header) {
+                if (header.indexOf('x-ms-') === 0) {
+                    canonicalizedHeadersArray.push(header);
+                }
+            });
+
+            canonicalizedHeadersArray.sort();
+
+            Ext.each(canonicalizedHeadersArray, function (currentHeader) {
+                canonicalizedHeaders += currentHeader.toLowerCase() + ':' + headers[currentHeader] + '\n';
+            });
+        }
+
+        return canonicalizedHeaders;
+    },
+
+<span id='Ext-azure-storage-Abstract-method-_formatStringToSign'>    /**
+</span>     * @private
+     */
+    _formatStringToSign : function (canonicalizedResource, request) {
+        if (this.getStorageType() === 'table') {
+            /*
+             StringToSign = Date + &quot;\n&quot; + CanonicalizedResource
+             */
+            return request.headers['x-ms-date'] + '\n' + canonicalizedResource;
+        }
+
+        /*
+         StringToSign = VERB + &quot;\n&quot; +
+         Content-MD5 + &quot;\n&quot; +
+         Content-Type + &quot;\n&quot; +
+         Date + &quot;\n&quot; +
+         CanonicalizedHeaders +
+         CanonicalizedResource;
+         */
+        return request.method + '\n' +
+               (request.headers['Content-MD5'] || '') + '\n' +
+               request.headers['Content-Type'] + '\n' +
+               request.headers['Date'] + '\n' +
+               this._formatCanonicalizedHeaders(request.headers) +
+               canonicalizedResource;
+    },
+
+<span id='Ext-azure-storage-Abstract-method-_encryptSignature'>    /**
+</span>     * @private
+     */
+    _encryptSignature : function (stringToSign) {
+        //https://code.google.com/p/crypto-js/#HMAC
+        var encodedBits = CryptoJS.HmacSHA256(
+            unescape(encodeURIComponent(stringToSign)), //UTF-8 encode the message
+            CryptoJS.enc.Base64.parse(this.getAccessKey())
+        ).toString(CryptoJS.enc.Base64);
+
+        /*
+         Signature=Base64(HMAC-SHA256(UTF8(StringToSign)))
+         */
+        return 'SharedKeyLite ' + this.getAccountName() + ':' + encodedBits;
+    },
+
+<span id='Ext-azure-storage-Abstract-method-_encodeAuthHeader'>    /**
+</span>     * @private
+     */
+    _encodeAuthHeader : function (canonicalizedResource, params, request) {
+        var canonicalizedUrl = this._formatCanonicalResource(canonicalizedResource, params),
+            stringToSign = this._formatStringToSign(canonicalizedUrl, request);
+
+        request.headers['Authorization'] = this._encryptSignature(stringToSign);
+
+        return request;
+    },
+
+<span id='Ext-azure-storage-Abstract-method-_normalizeAuthHeaderParams'>    /**
+</span>     * @private
+     */
+    _normalizeAuthHeaderParams : function (params) {
+        var str = '';
+
+        if (params.comp) {
+            str += '?comp=' + params.comp;
+        }
+
+        return str;
+    },
+
+<span id='Ext-azure-storage-Abstract-method-_formatRequest'>    /**
+</span>     * @private
+     */
+    _formatRequest : function (request, url, params, date) {
+        if (!request.headers) {
+            request.headers = {};
+        }
+
+        if (!date) {
+            date = new Date();
+        }
+
+        request.headers = Ext.apply({
+            /*
+             The x-ms-date header is provided because some HTTP client libraries and proxies automatically set
+             the Date header, and do not give the developer an opportunity to read its value in order to include
+             it in the authenticated request. If you set x-ms-date, construct the signature with an empty value
+             for the Date header.
+             */
+            'x-ms-date' : date.toUTCString(),
+            'Date'      : '',
+
+            'x-ms-version' : this.getMsVersion(),
+
+            'accept'         : '*/*',
+            'Accept-Charset' : 'UTF-8',
+            'host'           : this.getAccountName() + '.' + this.getStorageType() + '.core.windows.net:443',
+            'Origin'         : '',
+
+            'X-ZUMO-VERSION' : Ext.Azure.getUserAgentString(),
+
+            'dataserviceversion'    : '1.0;NetFx',
+            'maxdataserviceversion' : '2.0;NetFx'
+        }, request.headers);
+
+        if (request.xmlData !== undefined) {
+            request.headers = Ext.apply({
+                'Content-Type'   : (request.xmlData.length === 0) ? '' : 'application/atom+xml',
+                'Content-Length' : request.xmlData.length
+            }, request.headers);
+        }
+        else if (request.binaryData !== undefined) {
+            var length, type;
+
+            if (request.binaryData instanceof Blob) {
+                length = request.binaryData.size;
+                type = request.binaryData.type;
+            }
+            else { //assume it's an array of some kind
+                length = request.binaryData.length;
+                type = 'application/octet-stream';
+            }
+
+            request.headers = Ext.apply({
+                'Content-Type'   : type,
+                'Content-Length' : length
+            }, request.headers);
+        }
+
+        //remove any undefined headers
+        Ext.Object.each(request.headers, function (header, value) {
+            if (value === undefined) {
+                delete request.headers[header];
+            }
+        });
+
+        return this._encodeAuthHeader(url, params, request);
+    },
+
+<span id='Ext-azure-storage-Abstract-method-_applyXmlDocumentTpl'>    /**
+</span>     * @private
+     */
+    _applyXmlDocumentTpl : function (documentTpl, data) {
+        if (!data) {
+            return '';
+        }
+
+        if (!documentTpl) {
+            return data;
+        }
+
+        var tpl = Ext.create('Ext.XTemplate', documentTpl);
+
+        return tpl.apply(data);
+    },
+
+<span id='Ext-azure-storage-Abstract-method-_sendRequest'>    /**
+</span>     * @private
+     */
+    _sendRequest : function (config) {
+        Ext.Ajax.request(Ext.apply(config, {
+            disableCaching      : false,
+            useDefaultXhrHeader : false,
+            withCredentials     : true
+        }));
+    },
+
+<span id='Ext-azure-storage-Abstract-method-getStorageServiceProperties'>    /**
+</span>     * @param {Function} success
+     * @param {Function} failure
+     */
+    getStorageServiceProperties : function (success, failure) {
+        var canonicalizedResource = '/',
+            method = 'GET',
+            params = {
+                restype : 'service',
+                comp    : 'properties'
+            };
+
+        var url = this._formatRequestUrl(canonicalizedResource, params);
+        var requestBody = '';
+
+        var request = this._formatRequest(
+            {
+                url     : url,
+                method  : method,
+                headers : {
+                    'x-ms-version' : this.getMsVersion()
+                },
+                xmlData : requestBody,
+                success : success,
+                failure : failure
+            },
+            canonicalizedResource,
+            params
+        );
+
+        this._sendRequest(request);
+    },
+
+<span id='Ext-azure-storage-Abstract-method-setStorageServiceProperties'>    setStorageServiceProperties : function (data, success, failure) {
+</span>        var canonicalizedResource = '/',
+            method = 'PUT',
+            params = {
+                restype : 'service',
+                comp    : 'properties'
+            };
+
+        var url = this._formatRequestUrl(canonicalizedResource, params);
+        var requestBody = this._applyXmlDocumentTpl(this.xmlDocumentTpl.storageService, data);
+
+        var request = this._formatRequest(
+            {
+                url     : url,
+                method  : method,
+                headers : {
+                    'x-ms-version' : '2011-08-18'
+                },
+                xmlData : requestBody,
+                success : success,
+                failure : failure
+            },
+            canonicalizedResource,
+            params
+        );
+
+        this._sendRequest(request);
+    }
+});</pre>
+</body>
+</html>

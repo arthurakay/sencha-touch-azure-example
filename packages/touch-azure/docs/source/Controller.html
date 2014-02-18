@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js"><span id='Ext-azure-Controller'>/**
+</span> *
+ * The Ext.azure.Controller class provides automatic initialization for Ext.Azure.
+ *
+ *
+ *      Ext.application({
+ *
+ *          requires: [ 'Ext.azure.Controller' ],
+ *
+ *          azure : {
+ *              appKey: 'app key here',
+ *              appUrl: 'app url here'
+ *          },
+ *
+ *          //...
+ *      });
+ *
+ *
+ *  Using the Ext.azure.Controller in your application, you never need to manually call Ext.Azure.init().
+ */
+Ext.define('Ext.azure.Controller', {
+    extend : 'Ext.app.Controller',
+
+    requires : [
+        'Ext.azure.Azure'
+    ],
+
+<span id='Ext-azure-Controller-method-init'>    init : function() {
+</span>        var azure   = Ext.azure.Azure,
+            config  = this.getApplication().config.azure;
+
+        //add property to Ext.application.app
+        this.getApplication().azure = this;
+
+        azure.init(config);
+    }
+
+});</pre>
+</body>
+</html>

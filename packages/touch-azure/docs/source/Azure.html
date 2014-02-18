@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js"><span id='Ext-Azure'>/**
+</span> * The Ext.Azure class provides access to Windows Azure Mobile services from your Sencha Touch
+ * application. The current services which are provided in this SDK include Data, Authentication
+ * and Push.
+ *
+ * Initialization
+ * ----
+ * To initialize your application for use with the Ext.Azure SDK you will need to require the class in your
+ * application and then initialize the key and url settings during application launch.
+ *
+ * Let's take a look at
+ * a typical setup. Here we include the Azure class by use of the **requires** property in your application,
+ * and then we set the values for your application key and URL when your application is launched :
+ *
+ *
+ *      Ext.application({
+ *
+ *          requires: [ 'Ext.azure.Azure' ],
+ *
+ *          launch: function() {
+ *              Ext.Azure.init({
+ *                  appKey: 'app key here',
+ *                  appUrl: 'app url here'
+ *              });
+ *
+ *              //......
+ *
+ *          }
+ *      });
+ *
+ * @class Ext.Azure
+ * @alternateClassName Ext.azure.Azure
+ */
+
+Ext.define('Ext.azure.Azure', {
+    mixins : [ 'Ext.mixin.Observable' ],
+
+    singleton : true,
+
+<span id='Ext-Azure-property-version'>    version : '1.0.3.20140212154510',
+</span>
+    requires : [
+        'Ext.azure.Authentication',
+        'Ext.azure.User',
+        'Ext.azure.Proxy',
+        'Ext.azure.Push',
+
+        'Ext.azure.storage.Table',
+        'Ext.azure.storage.Blob'
+    ],
+
+<span id='Ext-Azure-event-authenticationsuccess'>    /**
+</span>     * @event authenticationsuccess
+     * Fired when successful login has occurred or when the user's credentials have been retreived from localStorage
+     */
+
+<span id='Ext-Azure-event-authenticationlogout'>    /**
+</span>     * @event authenticationlogout
+     * Fired when the user's credentials have been removed from the application. Note: nothing has been sent to the server ending the user's session.
+     */
+
+<span id='Ext-Azure-event-authenticationfailure'>    /**
+</span>     * @event authenticationfailure
+     * @param {Object} error
+     * Fired when login has not been successful. An error object is returned from Azure.
+     */
+
+<span id='Ext-Azure-event-pushnotification'>    /**
+</span>     * @event pushnotification
+     * @param {Object} event
+     * Fired when a notification has been received from Ext.azure.Push
+     */
+
+<span id='Ext-Azure-event-pushregistrationsuccess'>    /**
+</span>     * @event pushregistrationsuccess
+     * @param {Object} event
+     * Fired when PushPlugin successfully registers with Cordova
+     */
+
+<span id='Ext-Azure-event-pushregistrationfailure'>    /**
+</span>     * @event pushregistrationfailure
+     * @param {Object} event
+     * Fired when PushPlugin fails to register with Cordova
+     */
+
+<span id='Ext-Azure-property-currentUser'>    /**
+</span>     * @property {Object}
+     * An object that represents the current authenticated user.
+     */
+    currentUser: null,
+
+    config : {
+
+<span id='Ext-Azure-cfg-appUrl'>        /**
+</span>         * @cfg {String} appUrl
+         * The application url as specified in your Windows Azure app setup.
+         */
+        appUrl : null,
+
+<span id='Ext-Azure-cfg-appKey'>        /**
+</span>         * @cfg {String} appKey
+         * The application key as created in the Manage Keys sections of your Azure portal
+         */
+        appKey : null,
+
+<span id='Ext-Azure-cfg-protocol'>        /**
+</span>         * @cfg {String} protocol
+         * Protocol used by this application. Should be either http or https.
+         */
+        protocol: 'http',
+
+<span id='Ext-Azure-cfg-authIdentities'>        /**
+</span>         * @cfg {Array} authIdentities
+         * List of auth providers configured in Azure portal. Can be &quot;microsoft&quot;, &quot;google&quot;, &quot;facebook&quot; or &quot;twitter&quot;.
+         * Defaults to []
+         */
+        authIdentities : [],
+
+<span id='Ext-Azure-cfg-pushConfig'>        /**
+</span>         * @cfg {Object}
+         * An object containing key/value pairs for the platforms on which Push Notifications are enabled:
+         *
+         *   - windowsphone (channel)
+         *   - android (sender ID)
+         *   - ios (true)
+         *
+         *
+         *         pushConfig : {
+         *             windowsphone : 'channel_name',
+         *             android      : 'sender_id'
+         *             ios          : true
+         *         }
+         */
+        pushConfig : null
+    },
+
+<span id='Ext-Azure-method-constructor'>    /**
+</span>     * @private
+     */
+    constructor : function (config) {
+        this.initConfig(config);
+
+        return this;
+    },
+
+<span id='Ext-Azure-method-init'>    /**
+</span>     * Initialize Ext.Azure for use
+     * @param config
+     * @returns {boolean} True for successful initialization.
+     */
+
+    init : function (config) {
+        if (!config.appUrl || !config.appKey) {
+            //&lt;debug&gt;
+            Ext.Logger.error('Azure appUrl and/or appKey configs are missing. Aborting Azure initialization.');
+            //&lt;/debug&gt;
+            return false;
+        }
+
+        this.setConfig(config);
+
+        //load the currentUser credentials, if they exist
+        Ext.azure.Authentication.init();
+
+        //initialize push notifications
+        if (this.getPushConfig()) {
+            Ext.azure.Push.init(this.getPushConfig());
+        }
+
+        return true;
+    },
+
+<span id='Ext-Azure-method-buildDomainUrl'>    /**
+</span>     * Contructs the Builds the application URL
+     *
+     * @returns {string}
+     */
+    buildDomainUrl : function () {
+
+        return this.getProtocol() + &quot;://&quot; + Ext.Azure.getAppUrl() + '/';
+    },
+
+<span id='Ext-Azure-method-getCurrentUser'>    /**
+</span>     * When app is successfully authenticated, this method will return the current user object which contains
+     * token information.
+     *
+     * @return {Ext.azure.User} User object
+     */
+    getCurrentUser : function () {
+        return Ext.azure.Authenication.getCurrentUser();
+    },
+
+<span id='Ext-Azure-method-invokeApi'>    /**
+</span>     * Calls a custom API defined in an Azure Mobile Service.
+     *
+     * NOTE: any options that you can pass to Ext.Ajax.request can be passed here.
+     *
+     * @param options
+     * @param options.apiName {String} the name of the custom API
+     * @param options.jsonData {Object}
+     * @param options.callback {Function}
+     * @param options.success {Function}
+     * @param options.failure {Function}
+     */
+    invokeApi: function (options) {
+        var me = this;
+
+        Ext.Ajax.request(Ext.applyIf({
+            url     : me.buildDomainUrl() + '/api/' + options.apiName,
+            method  : options.method.toUpperCase()  ,
+            
+            headers : me.getDefaultHeaders(),
+            
+            jsonData: options.jsonData,
+
+            disableCachingParam: 'cachebuster',
+            
+            success: Ext.bind(options.success || Ext.emptyFn, options.scope || this),
+            
+            failure: Ext.bind(options.failure || Ext.emptyFn, options.scope || this)
+
+        }, options));
+    },
+
+<span id='Ext-Azure-method-getUserAgentString'>    /**
+</span>     * @private
+     */
+    getUserAgentString : function() {
+        var v = Ext.Azure.version,
+            tpl = Ext.create('Ext.XTemplate', [
+            ' ZUMO/{0} (lang={1}; os={2}; os_version={3}; arch={4}; version={5})'
+        ]);
+
+        return navigator.userAgent + tpl.apply({
+            0 : v.substr(0, v.lastIndexOf('.')),
+            1 : 'Sencha',
+            2 : '',
+            3 : '',
+            4 : 'Neutral',
+            5 : v
+        });
+    },
+
+<span id='Ext-Azure-method-getDefaultHeaders'>    /**
+</span>     * @private
+     */
+    getDefaultHeaders : function() {
+        return {
+            'X-ZUMO-APPLICATION' : this.getAppKey(),
+            'X-ZUMO-VERSION'     : this.getUserAgentString()
+        };
+    }
+
+}, function () {
+
+    //for simplicity, create a shorter alias
+    Ext.Azure = this;
+
+});</pre>
+</body>
+</html>

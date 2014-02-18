@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js"><span id='Ext-azure-AuthOptions'>/**
+</span> * The Azure AuthOptions class displays the available authentication options for users of your application.
+ * These options are defined on Ext.Azure via the authIdentities config.
+ *
+ */
+Ext.define('Ext.azure.AuthOptions', {
+    extend : 'Ext.Panel',
+
+    requires : [
+        'Ext.Button'
+    ],
+
+<span id='Ext-azure-AuthOptions-property-hideOnMaskTap'>    hideOnMaskTap : true,
+</span><span id='Ext-azure-AuthOptions-property-modal'>    modal         : true,
+</span>
+<span id='Ext-azure-AuthOptions-method-constructor'>    /**
+</span>     * @constructor
+     */
+
+    initialize : function () {
+        var me = this,
+            i = 0,
+            authIdentities = Ext.Azure.getAuthIdentities(),
+            len = authIdentities.length,
+            items = [];
+
+        for (i; i &lt; len; i++) {
+            switch (authIdentities[i].toLowerCase()) {
+                case 'microsoft':
+                    items.push({
+                        xtype   : 'button',
+                        text    : 'Microsoft',
+                        handler : Ext.Function.bind(me.microsoftHandler, me)
+                    });
+                    break;
+
+                case 'facebook':
+                    items.push({
+                        xtype   : 'button',
+                        text    : 'Facebook',
+                        handler : Ext.Function.bind(me.facebookHandler, me)
+                    });
+                    break;
+
+                case 'google':
+                    items.push({
+                        xtype   : 'button',
+                        text    : 'Google',
+                        handler : Ext.Function.bind(me.googleHandler, me)
+                    });
+                    break;
+
+                case 'twitter':
+                    items.push({
+                        xtype   : 'button',
+                        text    : 'Twitter',
+                        handler : Ext.Function.bind(me.twitterHandler, me)
+                    });
+                    break;
+            }
+        }
+
+        if (items.length &gt; 0) {
+            me.setItems(items);
+        }
+
+        me.callParent();
+    },
+
+<span id='Ext-azure-AuthOptions-method-microsoftHandler'>    microsoftHandler : function() {
+</span>        Ext.azure.Authentication.login('microsoftaccount');
+        this.destroy();
+    },
+
+<span id='Ext-azure-AuthOptions-method-facebookHandler'>    facebookHandler : function() {
+</span>        Ext.azure.Authentication.login('facebook');
+        this.destroy();
+    },
+
+<span id='Ext-azure-AuthOptions-method-googleHandler'>    googleHandler : function() {
+</span>        Ext.azure.Authentication.login('google');
+        this.destroy();
+    },
+
+<span id='Ext-azure-AuthOptions-method-twitterHandler'>    twitterHandler : function() {
+</span>        Ext.azure.Authentication.login('twitter');
+        this.destroy();
+    }
+});</pre>
+</body>
+</html>

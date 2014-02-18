@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<project name="Filters" default=".help">
+    <!--
+    The build-impl.xml file imported here contains the guts of the build process. It is
+    a great idea to read that file to understand how the process works, but it is best to
+    limit your changes to this file.
+    -->
+    <import file="${basedir}/.sencha/app/build-impl.xml"/>
+
+    <target name="-before-build">
+        <property file="build.properties"/>
+
+        <replace file="app.js"
+                 token="YOUR_APP_KEY"
+                 value="${azure.appKey}"/>
+
+        <replace file="app.js"
+                 token="YOUR_APP_URL"
+                 value="${azure.appUrl}"/>
+    </target>
+
+    <target name="-after-build">
+        <replace file="app.js"
+                 value="YOUR_APP_KEY"
+                 token="${azure.appKey}"/>
+
+        <replace file="app.js"
+                 value="YOUR_APP_URL"
+                 token="${azure.appUrl}"/>
+    </target>
+
+</project>

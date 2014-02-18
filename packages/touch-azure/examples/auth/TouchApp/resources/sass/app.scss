@@ -1,0 +1,19 @@
+// The following two lines import the default Sencha Touch theme. If you are building
+// a new theme, remove them and the add your own CSS on top of the base CSS (which
+// is already included in your app.json file).
+@import 'sencha-touch/default';
+@import 'sencha-touch/default/all';
+
+// Custom code goes here..
+
+/* this makes sure the button icons are vertically aligned in an Ext.dataview.List */
+.x-list-item .x-button-icon {
+    display: table-cell !important;
+}
+/* this allows us to specify any width we want for a checkbox inside an Ext.dataview.List */
+.x-list-item .x-field-checkbox .x-field-input {
+    min-width: 0
+}
+
+// Examples of using the icon mixin:
+// @include icon('user');

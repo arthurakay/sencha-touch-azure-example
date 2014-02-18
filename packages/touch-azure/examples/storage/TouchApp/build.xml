@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<project name="Storage" default=".help">
+    <!--
+    The build-impl.xml file imported here contains the guts of the build process. It is
+    a great idea to read that file to understand how the process works, but it is best to
+    limit your changes to this file.
+    -->
+    <import file="${basedir}/.sencha/app/build-impl.xml"/>
+
+    <target name="-before-build">
+        <property file="build.properties"/>
+
+        <replace file="app/controller/Table.js"
+                 token="YOUR_ACCOUNT_NAME"
+                 value="${azure.storageAccount}"/>
+
+        <replace file="app/controller/Table.js"
+                 token="YOUR_ACCOUNT_KEY"
+                 value="${azure.storageKey}"/>
+
+
+        <replace file="app/controller/Blob.js"
+                 token="YOUR_ACCOUNT_NAME"
+                 value="${azure.storageAccount}"/>
+
+        <replace file="app/controller/Blob.js"
+                 token="YOUR_ACCOUNT_KEY"
+                 value="${azure.storageKey}"/>
+
+        <replace file="app/controller/Example.js"
+                 token="YOUR_ACCOUNT_NAME"
+                 value="${azure.storageAccount}"/>
+
+        <replace file="app/controller/Example.js"
+                 token="YOUR_ACCOUNT_KEY"
+                 value="${azure.storageKey}"/>
+    </target>
+
+    <target name="-after-build">
+        <replace file="app/controller/Table.js"
+                 token="${azure.storageAccount}"
+                 value="YOUR_ACCOUNT_NAME"/>
+
+        <replace file="app/controller/Table.js"
+                 token="${azure.storageKey}"
+                 value="YOUR_ACCOUNT_KEY" />
+
+
+        <replace file="app/controller/Blob.js"
+                 token="${azure.storageAccount}"
+                 value="YOUR_ACCOUNT_NAME"/>
+
+        <replace file="app/controller/Blob.js"
+                 token="${azure.storageKey}"
+                 value="YOUR_ACCOUNT_KEY" />
+
+        <replace file="app/controller/Example.js"
+                 token="${azure.storageAccount}"
+                 value="YOUR_ACCOUNT_NAME"/>
+
+        <replace file="app/controller/Example.js"
+                 token="${azure.storageKey}"
+                 value="YOUR_ACCOUNT_KEY" />
+
+        <!-- iOS -->
+        <delete dir="../Platforms/iOS/www" />
+        <copy todir="../Platforms/iOS/www">
+            <fileset dir="${workspace.build.dir}/${args.environment}/${app.name}" />
+        </copy>
+
+    </target>
+
+</project>

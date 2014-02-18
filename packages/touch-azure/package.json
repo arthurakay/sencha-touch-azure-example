@@ -1,0 +1,42 @@
+{
+  "name": "touch-azure",
+  "format": "1",
+  "version": "1.0.3",
+  "compatVersion": "1.0.0.0",
+  "creator": "Sencha",
+  "summary": "Sencha Touch Extensions for Windows Azure",
+  "detailedDescription": "Sencha Touch Extensions for Windows Azure is an API designed to provide an easy way to develop Sencha Touch applications that can access the Windows Azure APIs using JavaScript.",
+  "type": "code",
+  "architect": {
+    "compatFrameworks": [
+      "touch22",
+      "touch23"
+    ],
+    "classes": [
+      {
+        "className": "Ext.azure.Proxy",
+        "definition": "ProxyDefinition.js",
+        "js": [
+          "Proxy.js"
+        ],
+        "css": []
+      },
+      {
+        "className": "Ext.azure.Store",
+        "definition": "StoreDefinition.js",
+        "js": [
+          "Store.js"
+        ],
+        "css": []
+      },
+      {
+        "className": "Ext.azure.Controller",
+        "definition": "ControllerDefinition.js",
+        "js": [
+          "Controller.js"
+        ],
+        "css": []
+      }
+    ]
+  }
+}

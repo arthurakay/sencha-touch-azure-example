@@ -1,0 +1,14 @@
+
+/* WindowsPhone does not yet support Pictos fonts so we use Wingdings */
+
+/* change the 'delete' pictos icon to a windings one */
+.x-button-icon.delete::before {
+    font-family: 'Wingdings' !important;
+    content: '\F0FB' !important;
+}
+
+/* change the 'checkbox' pictos icon to a windings one */
+.x-field-checkbox .x-field-mask::after {
+    font-family: 'Wingdings' !important;
+    content: '\F0FC' !important;
+}

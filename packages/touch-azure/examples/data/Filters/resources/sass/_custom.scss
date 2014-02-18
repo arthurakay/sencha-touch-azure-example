@@ -1,0 +1,11 @@
+.todo-completed {
+  background-color: transparent;
+
+  .x-component-outer {
+    background-color: transparent !important;
+  }
+
+  .x-input-el:checked + .x-field-mask::after {
+    color : #008D00;
+  }
+}

@@ -1,0 +1,67 @@
+.x-list-item-tpl .x-innerhtml {
+  padding : 0 !important;
+}
+
+.x-list-item {
+  border-top-color    : rgba(0, 0, 0, 0.5) !important;
+  border-bottom-color : rgba(0, 0, 0, 0.5) !important;
+}
+
+.x-toolbar-dark {
+  background-color : rgba(0, 0, 0, 0.5);
+  padding          : 0;
+  height           : 3.2em;
+
+  .x-toolbar-inner {
+    align-items       : stretch;
+    -webkit-box-align : stretch;
+  }
+}
+
+.x-toolbar .x-button {
+  margin           : 0;
+  border-width     : 0;
+  background-color : transparent;
+
+  &.x-button-pressing {
+    background-image : none;
+    background-color : rgba(0, 0, 0, 0.4);
+  }
+}
+
+.x-field .x-component-outer {
+  border-radius         : 0 !important;
+  -webkit-border-radius : 0 !important;
+  box-shadow            : none !important;
+  -webkit-box-shadow    : none !important;
+
+  input {
+    font-style : italic;
+  }
+}
+
+.x-label .x-innerhtml {
+  display             : flex;
+  display             : -webkit-flex;
+  align-items         : stretch;
+  -webkit-align-items : stretch;
+}
+
+.todo-label {
+  display             : flex;
+  display             : -webkit-flex;
+  align-items         : center;
+  -webkit-align-items : center;
+  padding-right       : 1em;
+}
+
+.todo-filter-button {
+  padding-left : 1em !important;
+  .x-button-label {
+    text-align : left !important;
+  }
+}
+
+body.x-desktop {
+  font-size : 14px;
+}

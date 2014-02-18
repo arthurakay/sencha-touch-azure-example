@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js"><span id='Ext-azure-Filter'>/**
+</span> * The Ext.azure.Filter class offers functionality for filtering your remote data in the Azure cloud.
+ *
+ *         store.filter([
+ *             Ext.create('Ext.azure.Filter', {
+ *                 property : &quot;text&quot;,
+ *                 value    : &quot;'aaa'&quot;
+ *             }),
+ *             Ext.create('Ext.azure.Filter', {
+ *                 property      : &quot;complete&quot;,
+ *                 value         : true,
+ *                 operator      :'eq',
+ *                 chainOperator :'or'
+ *             })
+ *         ]);
+ *
+ */
+Ext.define('Ext.azure.Filter', {
+    extend : 'Ext.util.Filter',
+    config : {
+
+<span id='Ext-azure-Filter-cfg-operator'>        /**
+</span>         * @cfg {String} operator
+         *
+         * Sets type of the operator to use for predicate
+         * Possible values:
+         * eq     Equal
+         * ne     Not equal
+         * gt     Greater than
+         * ge     Greater than or equal
+         * lt     Less than
+         * le     Less than or equal
+         *
+         * Default: 'eq'
+         */
+        operator : 'eq',
+
+<span id='Ext-azure-Filter-cfg-chainOperator'>        /**
+</span>         * @cfg {String} chainOperator
+         *
+         * Sets chaining operator between two or more predicates, e.g $filter=Price le 200 and Price gt 3.5
+         * Possible values:
+         * and     Logical and
+         * or     Logical or
+         * not     Logical negation
+         *
+         * Default: ''
+         */
+        chainOperator : ''
+    }
+});</pre>
+</body>
+</html>

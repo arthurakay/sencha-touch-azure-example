@@ -1,0 +1,30 @@
+.icon-check {
+  -webkit-mask-image : url(../icons/check.png);
+}
+
+.icon-circle-check {
+  -webkit-mask-image : url(../icons/circle-check.png);
+  width              : 37px !important;
+  height             : 37px !important;
+}
+
+.icon-cross {
+  -webkit-mask-image : url(../icons/cross.png);
+}
+
+.icon-down {
+  -webkit-mask-image : url(../icons/down.png);
+}
+
+.icon-up {
+  -webkit-mask-image : url(../icons/up.png);
+}
+
+.icon-plus {
+  -webkit-mask-image : url(../icons/plus.png);
+}
+
+.icon-check, .icon-circle-check, .icon-cross, .icon-down, .icon-up, .icon-plus {
+  background-color  : white;
+  -webkit-mask-size : contain;
+}

@@ -1,0 +1,29 @@
+// The following two lines import the default Sencha Touch theme. If you are building
+// a new theme, remove them and the add your own CSS on top of the base CSS (which
+// is already included in your app.json file).
+
+//---variables---
+
+$badge-radius : 0;
+$button-radius : 0;
+$button-stroke-weight : 0;
+$base-color : #333;//rgba(25, 133, 208, 1);
+$base-gradient : flat;
+$font-family : Verdana;
+$page-bg-color : #b3b3b3;
+$list-active-color : rgba(0, 0, 0, 0.5);
+$list-bg-color : rgba(0, 0, 0, 0);
+$list-pressed-color : rgba(0, 0, 0, 0.25);
+$list-round-padding : 0;
+$toolbar-input-height : 2em;
+
+@import 'sencha-touch/default';
+@import 'sencha-touch/default/all';
+
+// Custom code goes here..
+@import "icons";
+@import "custom";
+@import "override";
+
+// Examples of using the icon mixin:
+// @include icon('user');

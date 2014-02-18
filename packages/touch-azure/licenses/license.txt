@@ -1,0 +1,44 @@
+Sencha Touch Extensions for Windows Azure
+Copyright (c) 2013, Sencha Inc.
+All rights reserved.
+licensing@sencha.com
+
+
+This software may be licensed under GPL v3 or commercially. 
+
+
+Commercial License
+------------------------------------------------------------------------------------------
+
+This is the appropriate option if you are creating proprietary applications and you are 
+not prepared to distribute and share the source code of your application under the 
+GPL v3 license. The commercial license for this software is free.  Please visit
+https://market.sencha.com/modellicense for license terms and conditions.
+
+
+Open Source Licensing
+------------------------------------------------------------------------------------------
+This is the appropriate option if you are prepared to distribute and share the source code
+of your application and otherwise comply with the terms of the open source GNU General
+Public License version 3 (GPL v3) license.
+
+http://www.gnu.org/licenses/gpl.html
+
+
+
+Third Party Content
+------------------------------------------------------------------------------------------
+The following third party software is modified and distributed with this software and is 
+provided under other licenses and/or has source available from other locations. 
+
+Library: LintRoller (MIT) 
+Location: https://github.com/arthurakay/LintRoller
+License: https://github.com/arthurakay/LintRoller/blob/master/LICENSE
+
+Library: CryptoJS (BSD)
+Location: https://code.google.com/p/crypto-js/
+License: https://code.google.com/p/crypto-js/wiki/License
+
+--
+
+THIS SOFTWARE IS DISTRIBUTED "AS-IS" WITHOUT ANY WARRANTIES, CONDITIONS AND REPRESENTATIONS WHETHER EXPRESS OR IMPLIED, INCLUDING WITHOUT LIMITATION THE IMPLIED WARRANTIES AND CONDITIONS OF MERCHANTABILITY, MERCHANTABLE QUALITY, FITNESS FOR A PARTICULAR PURPOSE, DURABILITY, NON-INFRINGEMENT, PERFORMANCE AND THOSE ARISING BY STATUTE OR FROM CUSTOM OR USAGE OF TRADE OR COURSE OF DEALING.  

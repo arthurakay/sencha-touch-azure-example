@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js"><span id='Ext-azure-override-device-push-Cordova'>/**
+</span> * This class conditionally creates the Ext.device.push.Cordova class if the version of Touch
+ * is lesss than 2.3 since since it should be included in Touch by then.
+ */
+Ext.define('Ext.azure.override.device.push.Cordova', {
+    requires : 'Ext.device.push.Abstract'
+
+}, function () {
+
+    if (Ext.getVersion().isLessThan('2.3')) {
+
+<span id='Ext-device-push-Cordova'>        /**
+</span>         * Cordova push class that handles registering with the Cordova pushNotifications plugin
+         */
+        Ext.define('Ext.device.push.Cordova', {
+
+            extend: 'Ext.device.push.Abstract',
+
+            statics : {
+<span id='Ext-device-push-Cordova-static-property-callbacks'>                /**
+</span>                 * @private
+                 * A collection of callback methods that can be globally called by the Cordova PushPlugin
+                 */
+                callbacks : {}
+            },
+
+<span id='Ext-device-push-Cordova-method-setPushConfig'>            setPushConfig : function (config) {
+</span>                var methodName = Ext.id(null, 'callback');
+
+                //Cordova's PushPlugin needs a static method to call when notifications are received
+                Ext.device.push.Cordova.callbacks[methodName] = config.callbacks.received;
+
+                return {
+                    badge         : (config.callbacks.type === Ext.device.Push.BADGE) ? &quot;true&quot; : &quot;false&quot;,
+                    sound         : (config.callbacks.type === Ext.device.Push.SOUND) ? &quot;true&quot; : &quot;false&quot;,
+                    alert         : (config.callbacks.type === Ext.device.Push.ALERT) ? &quot;true&quot; : &quot;false&quot;,
+                    ecb           : 'Ext.device.push.Cordova.callbacks.' + methodName,
+                    senderID      : config.senderID,
+
+                    //TODO: we will eventually want to normalize this across iOS, Android and Windows...
+                    channelName   : config.channelName
+                };
+            },
+
+<span id='Ext-device-push-Cordova-method-register'>            register : function (config) {
+</span>                config.callbacks = this.callParent(arguments);
+
+                var pushConfig = this.setPushConfig(config),
+                    plugin = window.plugins.pushNotification;
+
+                plugin.register(
+                    config.callbacks.success,
+                    config.callbacks.failure,
+                    pushConfig
+                );
+
+            }
+
+        });
+
+    }
+
+});</pre>
+</body>
+</html>

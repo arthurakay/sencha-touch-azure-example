@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<project name="touch-azure" default=".help">
+    <!--
+    The build-impl.xml file imported here contains the guts of the build process. It is
+    a great idea to read that file to understand how the process works, but it is best to
+    limit your changes to this file.
+    -->
+    <import file="${basedir}/.sencha/package/build-impl.xml"/>
+
+    <target name="-before-init">
+
+        <!-- Exclude some things that aren't ready for the public... (or aren't needed) -->
+        <property name="pkg.excludes"
+                  value="sass/**/*,
+                         doc_src/**/*,
+                         Readme.md,
+
+                         examples/auth/TouchApp/build.properties,
+                         examples/auth/Platforms/**/*,
+
+                         examples/data/Basic/build.properties,
+                         examples/data/Filters/build.properties,
+
+                         examples/push/TouchApp/build.properties,
+                         examples/push/Platforms/iOS/www/**/*,
+                         examples/push/Platforms/Android/assets/www/**/*,
+                         examples/push/Platforms/WindowsPhone/Push/www/**/*,
+                         examples/push/Platforms/Web/**/*,
+
+                         examples/storage/TouchApp/build.properties,
+                         examples/storage/Platforms/iOS/www/**/*"
+                />
+    </target>
+
+    <target name="-before-build">
+        <!-- Auto-increment a build number -->
+        <tstamp>
+            <format property="build.timestamp" pattern="yyyyMMddHHmmss"/>
+        </tstamp>
+
+        <property name="buildVersion"
+                  value="${package.version}.${build.timestamp}"/>
+
+        <replace file="${package.dir}/src/Azure.js"
+                 token="'0.0.0'"
+                 value="'${buildVersion}'"/>
+    </target>
+
+    <target name="-before-pkg">
+
+        <!-- build Docs -->
+        <exec executable="bash" dir="${basedir}/doc_src">
+            <arg value="buildDocs.sh"/>
+        </exec>
+
+    </target>
+
+    <target name="-after-build">
+
+        <!-- Reset the build number so this doesn't get checked into Git -->
+        <replace file="${package.dir}/src/Azure.js"
+                 value="'0.0.0'"
+                 token="'${buildVersion}'"/>
+    </target>
+
+</project>

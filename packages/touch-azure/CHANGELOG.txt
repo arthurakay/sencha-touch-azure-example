@@ -1,0 +1,86 @@
+###
+### Version 1.0.3 (Released December January 10, 2014)
+###
+
+Bug fixes:
+  - Documentation fix for examples README
+
+
+###
+### Version 1.0.2 (Released December January 8, 2014)
+###
+
+Bug fixes:
+  - getBlob() can now return raw binary from Azure
+
+
+###
+### Version 1.0.0 (Released December 5, 2013)
+###
+
+Bug fixes:
+  - authentication popup in Cordova WebView (InAppBrowser) now correctly authenticates
+  - Push notification sample app corrected for iOS
+
+
+New features:
+  - added documentation about Azure Service Bus Notification Hubs (push notifications)
+  - added link to Sencha Market page within documentation and Getting Started guide
+  - added support for Mobile Services custom APIs
+  - added support for Windows Azure Storage APIs (table and blob only)
+  - added documentation about Azure Mobile Services Custom APIs
+  - added documentation about using Ext.Azure with Sencha Cmd
+  - added preliminary support for Sencha Architect
+
+
+###
+### Version 0.8.0 (Released July 17, 2013 at SenchaCon)
+###
+
+1. Data
+
+    Per the Windows Azure Getting Started with Data guide, web applications can connect with
+    Windows Azure Mobile Services APIs to perform create, read, update and delete (CRUD)
+    operations on data service tables. Sample Application demonstrates client side query /
+    filtering / paging. The APIs should include standard Table storage as well as custom
+    user-defined APIs.
+
+    Ext.Azure will deliver a customized Sencha Touch proxy for the Windows Azure CRUD operations
+    to streamline the cross-domain requests (CORS) for data. In addition to the library code,
+    Sencha will deliver full documentation, a user guide and at least one working example.
+
+    Known issues with "Developer Preview" available during SenchaCon:
+        - Custom APIs support was a late add and not included in this preview.
+
+
+2. Authentication
+
+Per the Windows Azure Getting Started with Authentication guide, web applications can
+authenticate users via Microsoft, Google, Facebook and Twitter oAuth protocols.
+
+Ext.Azure will deliver built-in functionality for user authentication via browser popup on the web.
+In addition to the library code, Sencha will deliver full documentation, a user guide and at
+least one working example.
+
+Known issues with "Developer Preview" available during SenchaCon:
+    - Webview only. Packaged apps have an issue with the pop-up in the workflow.
+      Microsoft and Sencha will incorporate a workaround / fix in a later release.
+
+
+3. Push Notifications
+
+    Per the Windows Azure Getting Started with Push guide, push notifications are limited to
+    hybrid (i.e. natively packaged) mobile applications and are not available inside a
+    traditional browser. Push notifications can be individually configured through Apple,
+    Google, and Microsoft’s developer portals.
+
+    Ext.Azure will deliver wrappers to normalize the behavior of push notifications, using
+    the Cordova PushPlugin plugin. In addition to the library code, Sencha will deliver
+    full documentation, a user guide and at least one working example for each platform
+    (iOS, Android and Windows Phone 8).
+
+    Known issues with "Developer Preview" available during SenchaCon:
+        - Sample app work only after the developer obtains keys from the various platforms (onerous process).
+          We requested sample or developer keys from Microsoft that will allow the apps to work out-of-the-box.
+
+        - Windows Azure Mobile Services not supporting Blackberry yet.

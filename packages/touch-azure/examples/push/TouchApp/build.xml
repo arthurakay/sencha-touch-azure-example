@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<project name="Push-Android" default=".help">
+    <!--
+    The build-impl.xml file imported here contains the guts of the build process. It is
+    a great idea to read that file to understand how the process works, but it is best to
+    limit your changes to this file.
+    -->
+    <import file="${basedir}/.sencha/app/build-impl.xml"/>
+
+    <target name="-before-build">
+        <property file="build.properties"/>
+
+        <replace file="app.js"
+                 token="YOUR_APP_KEY"
+                 value="${azure.appKey}"/>
+
+        <replace file="app.js"
+                 token="YOUR_APP_URL"
+                 value="${azure.appUrl}"/>
+    </target>
+
+    <target name="-after-build">
+        <!-- Android -->
+        <delete dir="../Platforms/Android/assets/www" />
+        <copy todir="../Platforms/Android/assets/www">
+            <fileset dir="${workspace.build.dir}/${args.environment}/${app.name}" />
+        </copy>
+
+        <!-- iOS -->
+        <delete dir="../Platforms/iOS/www" />
+        <copy todir="../Platforms/iOS/www">
+            <fileset dir="${workspace.build.dir}/${args.environment}/${app.name}" />
+        </copy>
+
+        <!-- WindowsPhone -->
+        <delete dir="../Platforms/WindowsPhone/Push/www" />
+        <copy todir="../Platforms/WindowsPhone/Push/www">
+            <fileset dir="${workspace.build.dir}/${args.environment}/${app.name}" />
+        </copy>
+
+        <!-- Web -->
+        <delete dir="../Platforms/Web" />
+        <copy todir="../Platforms/Web">
+            <fileset dir="${workspace.build.dir}/${args.environment}/${app.name}" />
+        </copy>
+
+        <replace file="app.js"
+                 value="YOUR_APP_KEY"
+                 token="${azure.appKey}"/>
+
+        <replace file="app.js"
+                 value="YOUR_APP_URL"
+                 token="${azure.appUrl}"/>
+    </target>
+
+</project>
